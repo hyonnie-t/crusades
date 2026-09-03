@@ -5,153 +5,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>십자군 전쟁, 누구에게 유리했을까?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* 십자군 전쟁 컨셉 — 양피지(문서) + 진홍(십자군 문장) + 고금(권위·부) */
-    --paper:#efe0ba;
-    --ink:#2a1c14;
-    --sub:#6e5c46;
-    --navy:#7a1f1f;
-    --navy-dark:#2e0b0b;
-    --ochre:#b8860b;
-    --ochre-dark:#8a6415;
-    --ochre-pale:#f3e2b8;
-    --seal:#5b1010;
-    --seal-pale:#f0d9d3;
-    --line:#d9c295;
-    --card:#fbf3e0;
+    /* 십자군 전쟁 컨셉 — "낡은 역사책 한 페이지" 톤. 양피지·잉크·인장(진홍)·고금(장식) 4색 축. */
+    --paper:#f3ead2;       /* 배경(책 표지 바깥) */
+    --page:#fffaef;        /* 카드=책 페이지 안쪽 */
+    --ink:#241a10;
+    --sub:#77664c;
+    --rule:#d9c79a;        /* 얇은 괘선·테두리 */
+    --navy:#7c2018;        /* 인장 진홍 — 본문 강조·주요 버튼 */
+    --navy-dark:#2a0f0c;   /* 표지 배경(헤더)·배너 */
+    --ochre:#a3792c;       /* 고금(장식) — 카드 상단 괘선·보조 강조 */
+    --ochre-dark:#7c5a1e;
+    --ochre-pale:#f1e3bf;
+    --wash:#f5e6df;        /* 선택 상태 옅은 톤(진홍 계열) */
+    --seal:#5b1210;
+    --line:var(--rule);
+    --card:var(--page);
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:"Noto Sans KR","Pretendard","Malgun Gothic",sans-serif;
-    background:var(--paper);
+    font-family:"Noto Serif KR","Noto Sans KR","Malgun Gothic",serif;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, #f9f1da 0%, var(--paper) 55%, #e9d9ae 100%) fixed;
     color:var(--ink);
     font-size:17px;
-    line-height:1.65;
+    font-weight:400;
+    line-height:1.75;
     -webkit-tap-highlight-color:transparent;
   }
   .serif{font-family:"Noto Serif KR",serif;}
+  .ui{font-family:"Noto Sans KR",sans-serif;} /* 조작용 UI 텍스트에만 씀(제목·본문은 세리프 유지) */
 
   .preview-banner{
-    background:var(--seal); color:#fff; text-align:center; font-size:13px; font-weight:800;
-    padding:8px; position:sticky; top:0; z-index:20; display:none;
+    background:var(--seal); color:#f7ece7; text-align:center;
+    font-family:"Noto Sans KR",sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.3px;
+    padding:9px; position:sticky; top:0; z-index:20; display:none;
   }
   .disclaimer-banner{
-    background:var(--navy-dark); color:#e8dcc0; text-align:center; font-size:12.5px; font-weight:700;
-    padding:8px 14px; position:sticky; top:0; z-index:19; border-bottom:1px solid #33436b;
+    /* 화면 전환마다 showScreen()이 맨 위로 스크롤시키므로 sticky가 아니어도 항상
+       다시 보임 — preview-banner와 둘 다 sticky top:0이면 스크롤 시 서로 겹치는
+       문제가 있어 이 배너는 static으로 둠(스크린샷 검증 중 발견). */
+    background:var(--navy-dark); color:#e6d7ba; text-align:center;
+    font-family:"Noto Sans KR",sans-serif; font-size:12px; font-weight:700; letter-spacing:.3px;
+    padding:9px 14px; border-bottom:1px solid var(--ochre);
   }
 
   .header{
-    background:linear-gradient(160deg, var(--navy-dark) 0%, var(--navy) 100%);
-    color:#fff; padding:22px 20px 18px; text-align:center;
+    background:var(--navy-dark);
+    color:#f2e6c8; padding:30px 20px 24px; text-align:center;
+    border-bottom:3px solid var(--ochre);
   }
-  .header .eyebrow{font-size:13px; opacity:.75; font-weight:700; letter-spacing:.3px;}
-  .header h1{margin:8px 0 6px; font-size:20.5px; font-weight:900; font-family:"Noto Serif KR",serif; line-height:1.4;}
-  .header p{margin:0; font-size:13.5px; opacity:.8;}
+  .header .eyebrow{
+    font-family:"Noto Sans KR",sans-serif; font-size:12px; font-weight:700;
+    letter-spacing:2px; color:#d8b96f; opacity:.9;
+  }
+  .header .header-rule{width:34px; height:1px; background:var(--ochre); margin:14px auto; opacity:.8;}
+  .header h1{margin:0 0 8px; font-size:22px; font-weight:700; font-family:"Noto Serif KR",serif; line-height:1.45; letter-spacing:.2px;}
+  .header p{margin:0; font-size:14px; font-style:italic; color:#cbb98a; opacity:.9;}
 
-  .wrap{max-width:640px; margin:0 auto; padding:18px 16px 90px;}
+  .wrap{max-width:640px; margin:0 auto; padding:20px 16px 90px;}
   .screen{display:none;}
   .screen.active{display:block; animation:fadeUp .35s ease;}
   @keyframes fadeUp{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
 
   .card{
-    background:var(--card); border:1px solid var(--line); border-radius:14px;
-    padding:22px 20px; margin-bottom:16px; box-shadow:0 3px 14px rgba(36,31,23,0.08);
+    background:var(--card); border:1px solid var(--rule); border-top:3px solid var(--ochre);
+    border-radius:6px; padding:26px 22px; margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(36,26,16,0.05), 0 10px 24px rgba(36,26,16,0.06);
   }
   .badge-chip{
-    display:inline-block; background:var(--ochre-pale); color:var(--ochre-dark);
-    font-size:13px; font-weight:800; padding:5px 12px; border-radius:100px; margin-bottom:12px;
+    display:inline-block; background:none; color:var(--navy);
+    font-family:"Noto Sans KR",sans-serif; font-size:12px; font-weight:800; letter-spacing:1.6px;
+    padding:0 0 7px; margin-bottom:16px; border-bottom:1px solid var(--ochre);
   }
-  h2{font-size:19px; margin:0 0 12px; font-weight:900; font-family:"Noto Serif KR",serif; line-height:1.45;}
-  h3{font-size:15px; margin:16px 0 8px; font-weight:800; color:var(--ochre-dark);}
+  h2{font-size:20px; margin:0 0 12px; font-weight:700; font-family:"Noto Serif KR",serif; line-height:1.5; letter-spacing:.1px;}
+  h3{font-size:15px; margin:16px 0 8px; font-weight:700; color:var(--ochre-dark); font-family:"Noto Serif KR",serif;}
   p{margin:0 0 10px;}
-  .sub{color:var(--sub); font-size:14.5px;}
+  .sub{color:var(--sub); font-size:14.5px; font-family:"Noto Sans KR",sans-serif; line-height:1.65;}
 
-  label{display:block; font-weight:700; font-size:14.5px; margin:14px 0 6px;}
+  label{
+    display:block; font-family:"Noto Sans KR",sans-serif; font-weight:700; color:var(--sub);
+    font-size:13.5px; letter-spacing:.2px; margin:16px 0 7px;
+  }
   input[type=text]{
-    width:100%; padding:14px 16px; font-size:17px;
-    border:2px solid var(--line); border-radius:12px; background:#fffdf6; min-height:48px;
+    width:100%; padding:14px 15px; font-size:17px; font-family:inherit;
+    border:1px solid var(--rule); border-radius:6px; background:var(--page); min-height:48px;
   }
-  input:focus{outline:none; border-color:var(--ochre);}
+  input:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(124,32,24,0.1);}
   textarea{
-    width:100%; min-height:90px; padding:14px 16px; font-size:16px;
-    border:2px solid var(--line); border-radius:12px; background:#fffdf6;
-    resize:vertical; font-family:inherit; line-height:1.55;
+    width:100%; min-height:90px; padding:14px 15px; font-size:16.5px;
+    border:1px solid var(--rule); border-radius:6px; background:var(--page);
+    resize:vertical; font-family:inherit; line-height:1.65;
   }
-  textarea:focus{outline:none; border-color:var(--ochre);}
-  textarea[readonly]{background:#f1ead4; color:#4a4130;}
+  textarea:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(124,32,24,0.1);}
+  textarea[readonly]{background:#f2e9d8; color:#4a3d2b;}
 
   .btn{
-    display:block; width:100%; padding:15px 20px; font-size:16.5px; font-weight:800;
-    border:none; border-radius:12px; cursor:pointer; min-height:50px; margin-top:14px;
+    display:block; width:100%; padding:15px 20px; font-size:16px;
+    font-family:"Noto Sans KR",sans-serif; font-weight:700; letter-spacing:.3px;
+    border:none; border-radius:6px; cursor:pointer; min-height:50px; margin-top:14px;
     transition:transform .1s ease;
   }
   .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--ochre); color:#fff; box-shadow:0 4px 12px rgba(184,134,11,0.35);}
-  .btn-primary:disabled{background:#cfc4a4; color:#fff; cursor:not-allowed; box-shadow:none;}
-  .btn-outline{background:transparent; color:var(--ochre-dark); border:2px solid var(--ochre);}
-  .btn-seal{background:var(--seal); color:#fff; box-shadow:0 4px 12px rgba(91,16,16,0.35);}
+  .btn-primary{background:var(--navy); color:#faf1de; box-shadow:0 3px 10px rgba(124,32,24,0.28);}
+  .btn-primary:disabled{background:#cdbfa2; color:#fff8ea; cursor:not-allowed; box-shadow:none;}
+  .btn-outline{background:transparent; color:var(--navy); border:1.5px solid var(--navy);}
+  .btn-seal{background:var(--ochre); color:#2a1c0c; box-shadow:0 3px 10px rgba(163,121,44,0.3);}
 
   /* 역할 선택 카드 */
-  .role-pick{display:flex; flex-direction:column; gap:14px; margin:14px 0 4px;}
+  .role-pick{display:flex; flex-direction:column; gap:12px; margin:14px 0 4px;}
   .role-card{
-    border:2px solid var(--line); border-radius:16px; padding:16px 18px;
-    cursor:pointer; background:#fffdf6;
+    position:relative; border:1px solid var(--rule); border-radius:6px; padding:16px 18px;
+    cursor:pointer; background:var(--page);
   }
-  .role-card.selected{border-color:var(--ochre); background:var(--ochre-pale); box-shadow:0 4px 12px rgba(184,134,11,0.2);}
-  .role-card .role-title{font-weight:900; font-size:16.5px; margin-bottom:4px; font-family:"Noto Serif KR",serif;}
-  .role-card .role-desc{font-size:13.5px; color:var(--sub); margin-bottom:8px;}
+  .role-card.selected{border-color:var(--navy); background:var(--wash);}
+  .role-card.selected::after{
+    content:"✓"; position:absolute; top:14px; right:16px; color:var(--navy);
+    font-family:"Noto Sans KR",sans-serif; font-weight:800; font-size:15px;
+  }
+  .role-card .role-title{font-weight:700; font-size:16.5px; margin-bottom:4px;}
+  .role-card .role-desc{font-size:13px; color:var(--sub); font-family:"Noto Sans KR",sans-serif; margin-bottom:8px;}
   .role-card .role-quote{
-    font-size:14px; font-style:italic; color:var(--ink); margin-top:6px;
-    padding:10px 12px; background:#fff; border-radius:10px;
-    border-left:3px solid var(--ochre); line-height:1.6; font-family:"Noto Serif KR",serif;
+    font-size:14.5px; font-style:italic; color:var(--ink); margin-top:6px;
+    padding:10px 12px; background:var(--paper); border-radius:0 6px 6px 0;
+    border-left:3px solid var(--ochre); line-height:1.7;
   }
 
   /* 다른 역할 확인 카드 */
   .other-role-card{
-    border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:14px; background:#fffdf6;
+    border:1px solid var(--rule); border-radius:6px; padding:16px 18px; margin-bottom:14px; background:var(--page);
   }
-  .other-role-card .role-title{font-weight:900; font-size:16px; margin-bottom:8px; font-family:"Noto Serif KR",serif;}
+  .other-role-card .role-title{font-weight:700; font-size:16px; margin-bottom:8px;}
   .other-role-card .role-quote{
-    font-size:14px; font-style:italic; color:var(--ink); margin:0 0 10px;
-    padding:10px 12px; background:#fff; border-radius:10px;
-    border-left:3px solid var(--ochre); line-height:1.6; font-family:"Noto Serif KR",serif;
+    font-size:14.5px; font-style:italic; color:var(--ink); margin:0 0 10px;
+    padding:10px 12px; background:var(--paper); border-radius:0 6px 6px 0;
+    border-left:3px solid var(--ochre); line-height:1.7;
   }
-  .other-role-card .role-example{font-size:14px; color:var(--sub); line-height:1.65;}
+  .other-role-card .role-example{font-size:14.5px; color:var(--sub); line-height:1.7;}
 
   /* 비교 대상 역할 버튼 */
   .compare-pick{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px;}
   .compare-btn{
-    flex:1 1 auto; min-width:90px; text-align:center; background:#fff; border:2px solid var(--line);
-    border-radius:12px; padding:12px 10px; font-size:14.5px; font-weight:800; color:var(--ink);
-    cursor:pointer; min-height:48px;
+    flex:1 1 auto; min-width:90px; text-align:center; background:var(--page); border:1px solid var(--rule);
+    border-radius:6px; padding:12px 10px; font-family:"Noto Sans KR",sans-serif; font-size:14.5px;
+    font-weight:700; color:var(--ink); cursor:pointer; min-height:48px;
   }
-  .compare-btn.selected{border-color:var(--ochre); background:var(--ochre-pale); color:var(--ochre-dark);}
+  .compare-btn.selected{border-color:var(--navy); background:var(--wash); color:var(--navy);}
 
   .hint-toggle{
     display:inline-flex; align-items:center; gap:6px;
-    background:none; border:1px solid var(--line); color:var(--sub);
-    font-size:13px; font-weight:700; padding:8px 14px; border-radius:100px;
-    cursor:pointer; margin:12px 0 0;
+    background:none; border:none; border-bottom:1px dashed var(--navy); color:var(--navy);
+    font-family:"Noto Sans KR",sans-serif; font-size:13px; font-weight:700; padding:8px 0 6px;
+    cursor:pointer; margin:14px 0 0;
   }
   .hint-box{
-    display:none; background:#f1ead4; border-radius:12px; padding:12px 14px;
-    font-size:14px; color:var(--sub); margin-top:8px; line-height:1.6;
+    display:none; background:var(--ochre-pale); border-radius:0 6px 6px 0; border-left:3px solid var(--ochre);
+    padding:13px 15px; font-size:14px; font-style:italic; color:var(--sub); margin-top:8px; line-height:1.7;
   }
   .hint-box.open{display:block;}
 
-  .final-msg{
-    background:linear-gradient(120deg,var(--ochre-pale),#fffdf6);
-    border-radius:18px; padding:22px; text-align:center; margin-top:8px;
-  }
-  .final-msg .rank{font-size:30px; margin-bottom:6px;}
+  .final-msg{text-align:center;}
+  .final-msg .rank{font-size:30px; margin-bottom:8px;}
 
-  .prior-card{background:#fffdf6; border:1px dashed var(--ochre); border-radius:12px; padding:14px 16px; margin-bottom:6px;}
-  .prior-card .prior-label{font-size:12.5px; font-weight:800; color:var(--ochre-dark); margin-bottom:8px;}
-  .recap-row{font-size:14px; line-height:1.6; margin-bottom:6px;}
-  .recap-row b{color:var(--ink);}
+  .prior-card{background:var(--page); border:1px dashed var(--ochre); border-radius:6px; padding:15px 16px; margin-bottom:6px;}
+  .prior-card .prior-label{font-family:"Noto Sans KR",sans-serif; font-size:12.5px; font-weight:800; letter-spacing:.3px; color:var(--ochre-dark); margin-bottom:8px;}
+  .recap-row{font-size:14.5px; line-height:1.7; margin-bottom:6px;}
+  .recap-row b{color:var(--ink); font-family:"Noto Sans KR",sans-serif; font-weight:700;}
   .recap-row:last-child{margin-bottom:0;}
 
   @media (min-width:760px){ body{font-size:17.5px;} }
@@ -164,6 +186,7 @@
 
 <div class="header">
   <div class="eyebrow">2학년 세계사 · 주제16 십자군 전쟁과 그 영향 · 1차시</div>
+  <div class="header-rule"></div>
   <h1 class="serif">십자군 전쟁, 누구에게 유리했을까?</h1>
   <p>다들 이유가 달랐는데, 결과는 누구한테 유리했을까?</p>
 </div>
@@ -251,7 +274,7 @@
   <!-- 화면 5: 완료 -->
   <div class="screen" id="screen-done">
     <div class="card final-msg">
-      <div class="rank">🏰</div>
+      <div class="rank">📜</div>
       <div style="font-weight:900; font-size:16px;">활동 제출 완료</div>
       <div class="sub" style="margin-top:4px;">선생님이 서술 내용을 확인할게.</div>
     </div>
