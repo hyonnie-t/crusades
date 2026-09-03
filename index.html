@@ -8,18 +8,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#e9dfc3;
-    --ink:#241f17;
-    --sub:#6c604a;
-    --navy:#1c2740;
-    --navy-dark:#101728;
-    --ochre:#a97a35;
-    --ochre-dark:#7c581f;
-    --ochre-pale:#f1e6c8;
-    --seal:#8a3226;
-    --seal-pale:#f3ddd3;
-    --line:#d6c496;
-    --card:#fbf6e6;
+    /* 십자군 전쟁 컨셉 — 양피지(문서) + 진홍(십자군 문장) + 고금(권위·부) */
+    --paper:#efe0ba;
+    --ink:#2a1c14;
+    --sub:#6e5c46;
+    --navy:#7a1f1f;
+    --navy-dark:#2e0b0b;
+    --ochre:#b8860b;
+    --ochre-dark:#8a6415;
+    --ochre-pale:#f3e2b8;
+    --seal:#5b1010;
+    --seal-pale:#f0d9d3;
+    --line:#d9c295;
+    --card:#fbf3e0;
   }
   *{box-sizing:border-box;}
   body{
@@ -88,10 +89,10 @@
     transition:transform .1s ease;
   }
   .btn:active{transform:scale(0.98);}
-  .btn-primary{background:var(--ochre); color:#fff; box-shadow:0 4px 12px rgba(169,122,53,0.35);}
+  .btn-primary{background:var(--ochre); color:#fff; box-shadow:0 4px 12px rgba(184,134,11,0.35);}
   .btn-primary:disabled{background:#cfc4a4; color:#fff; cursor:not-allowed; box-shadow:none;}
   .btn-outline{background:transparent; color:var(--ochre-dark); border:2px solid var(--ochre);}
-  .btn-seal{background:var(--seal); color:#fff; box-shadow:0 4px 12px rgba(138,50,38,0.35);}
+  .btn-seal{background:var(--seal); color:#fff; box-shadow:0 4px 12px rgba(91,16,16,0.35);}
 
   /* 역할 선택 카드 */
   .role-pick{display:flex; flex-direction:column; gap:14px; margin:14px 0 4px;}
@@ -99,7 +100,7 @@
     border:2px solid var(--line); border-radius:16px; padding:16px 18px;
     cursor:pointer; background:#fffdf6;
   }
-  .role-card.selected{border-color:var(--ochre); background:var(--ochre-pale); box-shadow:0 4px 12px rgba(169,122,53,0.2);}
+  .role-card.selected{border-color:var(--ochre); background:var(--ochre-pale); box-shadow:0 4px 12px rgba(184,134,11,0.2);}
   .role-card .role-title{font-weight:900; font-size:16.5px; margin-bottom:4px; font-family:"Noto Serif KR",serif;}
   .role-card .role-desc{font-size:13.5px; color:var(--sub); margin-bottom:8px;}
   .role-card .role-quote{
@@ -148,6 +149,10 @@
   .final-msg .rank{font-size:30px; margin-bottom:6px;}
 
   .prior-card{background:#fffdf6; border:1px dashed var(--ochre); border-radius:12px; padding:14px 16px; margin-bottom:6px;}
+  .prior-card .prior-label{font-size:12.5px; font-weight:800; color:var(--ochre-dark); margin-bottom:8px;}
+  .recap-row{font-size:14px; line-height:1.6; margin-bottom:6px;}
+  .recap-row b{color:var(--ink);}
+  .recap-row:last-child{margin-bottom:0;}
 
   @media (min-width:760px){ body{font-size:17.5px;} }
 </style>
@@ -230,8 +235,11 @@
       <h2 id="compareTitle">비교해서 써보자</h2>
       <p class="sub" id="comparePrompt"></p>
 
+      <div class="prior-card" id="myAnswerRecap"></div>
+
       <label>비교할 역할을 하나 골라줘</label>
       <div class="compare-pick" id="comparePick"></div>
+      <div class="other-role-card" id="compareRoleReveal" style="display:none; margin-top:12px;"></div>
 
       <label>동기가 뭐가 제일 다른지, 그 차이가 왜 생겼는지 써봐</label>
       <textarea id="compareTxt" placeholder="예: 나는 ___인데 상대는 ___이다. 이런 차이가 생긴 이유는 ___이기 때문이다."></textarea>
@@ -409,9 +417,22 @@ document.getElementById("toCompareBtn").addEventListener("click", ()=>{
   document.getElementById("comparePrompt").textContent =
     "나머지 셋 중 하나를 골라서, 나랑 동기가 뭐가 제일 다른지, 그리고 그 차이가 왜 생겼는지 써봐.";
 
+  // 내가 화면2에서 쓴 답변을 여기서도 계속 볼 수 있게 다시 보여줌 — 비교하려면
+  // 방금 쓴 내 글이랑 상대 역할 예시를 동시에 봐야 하는데, 스크롤 위로 올라가지
+  // 않고 이 화면 안에서 바로 비교하게 하기 위함.
+  document.getElementById("myAnswerRecap").innerHTML = `
+    <div class="prior-label">📝 내가 쓴 답변 (${selectedRole})</div>
+    <div class="recap-row"><b>참전 이유</b> — ${myAnswer.q1}</div>
+    <div class="recap-row"><b>얻고 싶은 것</b> — ${myAnswer.q2}</div>
+    <div class="recap-row"><b>걱정되는 것</b> — ${myAnswer.q3}</div>
+  `;
+
   const comparePick = document.getElementById("comparePick");
   comparePick.innerHTML = "";
   compareRole = null;
+  const compareRoleReveal = document.getElementById("compareRoleReveal");
+  compareRoleReveal.style.display = "none";
+  compareRoleReveal.innerHTML = "";
   document.getElementById("submitBtn").disabled = true;
   ROLE_ORDER.filter(r=>r!==selectedRole).forEach(role=>{
     const btn = document.createElement("button");
@@ -423,6 +444,17 @@ document.getElementById("toCompareBtn").addEventListener("click", ()=>{
       document.querySelectorAll(".compare-btn").forEach(b=>b.classList.remove("selected"));
       btn.classList.add("selected");
       compareRole = role;
+
+      // 비교 대상으로 고른 역할의 대사·예시 답변을 바로 아래에 띄워서,
+      // 내 답변(위 recap)과 나란히 보면서 비교 서술을 쓸 수 있게 한다.
+      const info = ROLE_DATA[role];
+      compareRoleReveal.innerHTML = `
+        <div class="role-title">${info.emoji} ${role}</div>
+        <div class="role-quote">"${info.quote}"</div>
+        <div class="role-example">${info.example}</div>
+      `;
+      compareRoleReveal.style.display = "block";
+
       checkCompare();
     });
     comparePick.appendChild(btn);
